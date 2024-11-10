@@ -135,6 +135,11 @@ export default function Home() {
   const [message2, setMessage2] = useState([]);
 
   const [pieTopping, setPieTopping] = useState([]);
+  const [pieCheese, setPieCheese] = useState([]);
+  const [pieMeat, setPieMeat] = useState([]);
+  const [pieNoodles, setPieNoodles] = useState([]);
+  const [pieDrizzles, setPieDrizzles] = useState([]);
+  const [pieSides, setPieSides] = useState([]);
 
   const [tab, setTab] = useState("Toppings");
   const onTabChange = (value: String) => {
@@ -191,12 +196,12 @@ export default function Home() {
                       { "key": "Average", "var": filtered }
                     ];
 
-var pieKeys = {"Noodles" : message2,
-  "Cheese": filtered,
-  "Meat": filtered ,
+var pieKeys = {"Noodles" : pieNoodles,
+  "Cheese": pieCheese,
+  "Meat": pieMeat ,
   "Toppings": pieTopping ,
-  "Drizzles": filtered ,
-  "Sides": filtered };
+  "Drizzles": pieDrizzles ,
+  "Sides": pieSides };
 
 
   return (
