@@ -1,0 +1,6 @@
+{
+  "/sales/page": "app/sales/page.js",
+  "/page": "app/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/compare/page": "app/compare/page.js"
+}
