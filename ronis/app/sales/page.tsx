@@ -203,7 +203,8 @@ var filterKeys = { "April": filtered ,
             </CardContent>
           </Card>
         </div>
-        <Card>
+        <div className="flex-col space-y-2">
+          <Card>
             <CardHeader className="items-center space-y-10">
               <CardTitle><h1 className="text-4xl">${sales[tab]}</h1></CardTitle>
             </CardHeader>
@@ -211,7 +212,42 @@ var filterKeys = { "April": filtered ,
               <p>Average Bowl Cost</p>
             </CardContent>
           </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Meat Add-on Sales</CardTitle>
+            </CardHeader>
+            <ChartContainer config={chartConfig} className="p-5">
+              <BarChart data={salesGraph}>
+                <CartesianGrid vertical={true} />
+                <XAxis
+                  dataKey="Key"
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="Val" fill="var(--color-desktop)" radius={4} />
+                <Bar dataKey="Val2" fill="var(--color-mobile)" radius={4} />
+              </BarChart>
+            </ChartContainer>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Sides Add-on Sales</CardTitle>
+            </CardHeader>
+            <ChartContainer config={chartConfig} className="p-5">
+              <BarChart data={salesGraph}>
+                <CartesianGrid vertical={true} />
+                <XAxis
+                  dataKey="Key"
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="Val" fill="var(--color-desktop)" radius={4} />
+                <Bar dataKey="Val2" fill="var(--color-mobile)" radius={4} />
+              </BarChart>
+            </ChartContainer>
+          </Card>
+        </div>
       </div>
     </div>
   );
 }
+
+

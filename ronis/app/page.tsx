@@ -286,7 +286,7 @@ export default function Home() {
                     dataKey="Key"
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <ChartLegend content={<ChartLegendContent />} />
+                  {/* <ChartLegend content={<ChartLegendContent />} /> */}
                   <Bar dataKey="Val" fill="var(--color-desktop)" radius={4} />
                   <Bar dataKey="Val2" fill="var(--color-mobile)" radius={4} />
                 </BarChart>

@@ -41,6 +41,9 @@ import {
 } from "@/components/ui/sidebar"
 import React from 'react';
 import { useEffect, useState } from 'react';
+import Image from 'next/image'
+import logo from '/components/logo.ico'
+import { Utensils, ChartNoAxesCombined, ChartColumnStacked, Cog } from "lucide-react"
 
 
 // const chartData = [
@@ -100,78 +103,26 @@ export default function Page() {
 
   return (
     <div>
-      {/* <h1 className="bg-slate-200 py-5  text-center text-2xl font-extrabold tracking-tight">
-        Ronis Mac Bar Dashboard
-      </h1> */}
-      <div className="flex flex-auto flex-row p-5 space-x-2">
-        <div className="space-y-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Third Screen</CardTitle>
-              <CardDescription>This has some info in it</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>This is some text</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Chart Example</CardTitle>
-              <CardDescription>This has some info in it</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                <BarChart data={message}>
-                  <CartesianGrid vertical={true} />
-                  <XAxis
-                    dataKey="Month"
-                  />
-                  <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                  <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-                </BarChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
+        <div className='flex items-center space-x-2 justify-center'>
+            <Image className="flex-none min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px]"
+            src={logo}
+            width={32}
+            height={32}
+            alt="Ronis Logo"
+            />
+            <ChartColumnStacked />
+            <h1 className="py-5 text-2xl font-extrabold tracking-tight">
+                Compare
+            </h1>
         </div>
-        <div>
-          <Card>
-            <CardHeader className="flex flex-row justify-between">
-              <div>
-                <CardTitle>Chart Example</CardTitle>
-                <CardDescription>This has some info in it</CardDescription>
-              </div>
-              <div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">Filter</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
-                    <DropdownMenuSeparator/>
-                    <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-                      <DropdownMenuRadioItem value="first">First</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="second">Second</DropdownMenuRadioItem>
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                <BarChart data={filteredObj.find(el => el.key === position)?.var}>
-                  <CartesianGrid vertical={true} />
-                  <XAxis
-                    dataKey="Key"
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <ChartLegend content={<ChartLegendContent />} />
-                  <Bar dataKey="Val" fill="var(--color-desktop)" radius={4} />
-                  <Bar dataKey="Val2" fill="var(--color-mobile)" radius={4} />
-                </BarChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
+        <div className="flex flex-row space-x-2">
+            <Card>
+                <CardHeader>Add a chart</CardHeader>
+            </Card>
+            <Card>
+                <CardHeader>Add a chart</CardHeader>
+            </Card>
         </div>
-      </div>
     </div>
   );
 }
