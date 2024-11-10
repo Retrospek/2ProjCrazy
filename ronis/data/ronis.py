@@ -3,6 +3,8 @@ import os
 import datetime as dt
 import seaborn as sns
 import matplotlib.pyplot as plt
+from functools import reduce
+import numpy as np
 price = {
     "Regular": 0,
     "Gluten-free": 0,
@@ -66,16 +68,21 @@ for i in files:
     i["Date"] = i["Sent Date"].dt.date
     i["Time"] = i["Sent Date"].dt.time
     i["Time Points"] = i['Sent Date'].dt.hour * 3600 + i['Sent Date'].dt.minute * 60 + i['Sent Date'].dt.month * 1000000000+i['Sent Date'].dt.day * 1000000 + i['Sent Date'].dt.second
-def additup(months):
-    base = months[0]
-    for i in range(1, len(months)):
-        base = pd.concat([base, months[i]])
-    return base
-def additup(startRange= '2000-02-28 14:30:00', endRange = '2100-02-28 14:30:00'):
+
+
+def additup(startRange='2000-10-01 10:42:00', endRange='2100-10-01 10:42:00'):
     base = files[0]
     for i in files:
         base = pd.concat([base, i])
     return base[(base['Sent Date'] >= dt.datetime.strptime(startRange, '%Y-%m-%d %H:%M:%S'))|(base['Sent Date'] <= dt.datetime.strptime(endRange, '%Y-%m-%d %H:%M:%S'))]
+def additupMonths(months):
+    try:
+        base = months[0]
+        for i in range(1+files.index(months[0]),files.index(months[:-1])):
+            base = pd.concat([base, i])
+    except:
+        base = months
+    return base
 def group_it_up(df, tip):
     if(tip == "Main"):
         slatty = df[(df["Option Group Name"] == 'Noods') | (df["Option Group Name"] == 'Choose Your Melted Cheese') | (df["Option Group Name"] == 'Mix Bases')]
@@ -88,11 +95,24 @@ def group_it_up(df, tip):
     return slatty
 def howmanyTypes(df, col):
     df2= group_it_up(df, col)
+    shits = (df2["Modifier"] != "No " + col[0])
     if(col in ["Meats", "Sides", "Drizzles"]):
-        col = col[:-1]
+        shits = shits|(df2["Modifier"] != "No " + col[:-1])
+    else:
+        shits = shits|(df2["Modifier"] != "No " + col)
     if(col == 'Cheese'):
-        return df2[(df2["Modifier"] != "No " + col)|(df2["Modifier"] != 'MIX')].groupby('Modifier')['Order #'].count().sort_values(ascending = False)
-    return df2[(df2["Modifier"] != "No " + col)].groupby('Modifier')['Order #'].count().sort_values(ascending = False)
+        shits=shits|(df2["Modifier"] != 'MIX')
+    return df2[shits].groupby('Modifier')['Order #'].count().sort_values(ascending = False)
+
+def averages(df, col):
+    
+    return round(howmanyTypes(df, col)/len(files)).astype(int)
+        
+def income(series,col):
+    d =series.to_dict()
+    for i in d:
+        d[i]=round(d[i]*price[i],2)
+    return pd.Series(d).sort_values(ascending=False).iloc[:-1]
 def weAintGotHours(df):
     df["Hours"] = df["Sent Date"].dt.hour
     df["strhours"] = df["Sent Date"].dt.strftime("%I %p")
@@ -125,7 +145,7 @@ def prices(df):
                 d["Price"] = round(d["Price"] *1.0625,2)
                 rows.append(d)
             
-            d = row[['Order #', 'Sent Date', 'Modifier', 'Parent Menu Selection']].to_dict()
+            d = row[['Order #', 'Sent Date', 'Modifier', 'Parent Menu Selection', 'Option Group Name']].to_dict()
             
             d["Toppings"] = []
             d["Drink"] = []
@@ -142,9 +162,21 @@ def prices(df):
                     d["Do you want Mac and Cheese added inside?"] = True
                 else:
                     d[row["Option Group Name"].split()[-1]].append(row['Modifier'])
+                    if(row["Option Group Name"] == "Mac and Cheese Options"):
+                        d['Price'] = 39.99
                     d['Price'] += price[row['Modifier']]
             except:
                 pass
     return pd.DataFrame(rows) 
-print(howmanyTypes(additup(), "Mac and Cheese Options"))
+def cummulative(df, col):
+    slatty = howmanyTypes(df, col)
+    return slatty/slatty.sum()
+def mostLikelyBowl(df):
+    onit = {"Toppings":[], "Meats":{}, "Cheese":{}, "Drizzles":{}}
+    for i in onit:
+        print(howmanyTypes(prices(df), i))
+    print(onit)
+    
+print(mostLikelyBowl(additup()))
+
 
