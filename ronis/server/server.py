@@ -72,7 +72,8 @@ def return_home():
         { "Month": "January", "desktop": 186, "mobile": 80 },
         { "Month": "January", "desktop": 186, "mobile": 50 }
     ])
-folder_path = 'ronis\data\datamonth'
+
+folder_path = "data\datamonth"
 months = ["january", "february", 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
 files = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, file))]
 new_files = []
@@ -240,7 +241,31 @@ def toppings_chart():
     return jsonify([
         {"Key":i, "Value":d[i]} for i in d
     ])
-    
+
+@app.route("/api/drizzles_chart", methods=["GET"])
+def drizzles_chart():
+    d = howmanyTypes(additup(),'Drizzles').to_dict()
+    return jsonify([
+        {"Key":i, "Value":d[i]} for i in d
+    ])
+@app.route("/api/meats_chart", methods=["GET"])
+def meats_chart():
+    d = howmanyTypes(additup(),'Meats').to_dict()
+    return jsonify([
+        {"Key":i, "Value":d[i]} for i in d
+    ])
+@app.route("/api/cheese_chart", methods=["GET"])
+def cheese_chart():
+    d = howmanyTypes(additup(),'Cheese').to_dict()
+    return jsonify([
+        {"Key":i, "Value":d[i]} for i in d
+    ])
+@app.route("/api/noodles_chart", methods=["GET"])
+def noodles_chart():
+    d = howmanyTypes(additup(),'Main').to_dict()
+    return jsonify([
+        {"Key":i, "Value":d[i]} for i in d
+    ])
 
 @app.route("/api/test", methods=["GET"])
 def return_test():
