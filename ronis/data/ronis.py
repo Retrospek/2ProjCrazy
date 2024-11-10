@@ -95,13 +95,13 @@ def group_it_up(df, tip):
     return slatty
 def howmanyTypes(df, col):
     df2= group_it_up(df, col)
-    shits = (df2["Modifier"] != "No " + col[0])
+    shits = (df2["Modifier"] != "No " + col)
     if(col in ["Meats", "Sides", "Drizzles"]):
-        shits = shits|(df2["Modifier"] != "No " + col[:-1])
+        shits = shits&(df2["Modifier"] != "No " + col[:-1])
     else:
-        shits = shits|(df2["Modifier"] != "No " + col)
+        shits = shits&(df2["Modifier"] != "No " + col)
     if(col == 'Cheese'):
-        shits=shits|(df2["Modifier"] != 'MIX')
+        shits=shits&(df2["Modifier"] != 'MIX')
     return df2[shits].groupby('Modifier')['Order #'].count().sort_values(ascending = False)
 
 def averages(df, col):
@@ -171,12 +171,11 @@ def prices(df):
 def cummulative(df, col):
     slatty = howmanyTypes(df, col)
     return slatty/slatty.sum()
-def mostLikelyBowl(df):
-    onit = {"Toppings":[], "Meats":{}, "Cheese":{}, "Drizzles":{}}
-    for i in onit:
-        print(howmanyTypes(prices(df), i))
-    print(onit)
-    
-print(mostLikelyBowl(additup()))
+def most(df):
+    dict = {"Toppings":"", "Drink":"", "Drizzles":[], "Meats":"", "Cheese":"", "Side":""}
+    for i in dict:
+        dict[i] = list(howmanyTypes(df, i).to_dict().keys())[0]
+    return dict
+print(most(additup()))
 
-
+prices(additup()).to_csv('ronis\data\prices.csv', index = False)

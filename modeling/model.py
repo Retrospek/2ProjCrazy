@@ -1,96 +1,189 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
+#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
+#SNOW LEVEL SHIFT KAYAK HEAT TAB BUCKS RETURN JAZZ HAIL OPTION RAIN SLEET RACECAR MOM NETS
+#[['SNOW', 'LEVEL', 'SHIFT', 'KAYAK'], ['HEAT', 'TAB', 'BUCKS', 'RETURN'], ['JAZZ', 'HAIL', 'OPTION', 'RAIN'], ['SLEET', 'RACECAR', 'MOM', 'NETS']]
+#[['ANTIC', 'CAPER', 'EXPLOIT', 'STUNT'], ['DILL', 'KOSHER', 'SOUR', 'SWEET'], ['ADULT', 'BLUE', 'SPICY', 'SUGGESTIVE'], ['CHEESE', 'CORD', 'DECK', 'MUSTARD']]
+#[['HASH', 'SALAD', 'SCRAMBLE', 'STEW'], ['CHARACTER', 'IMAGE', 'NAME', 'REPUTATION'], ['ARTIST', 'MEDIUM', 'TITLE', 'YEAR'], ['DIAL', 'EGADS', 'MONTE', 'YOGA']]
+#[['PAUSE', 'PLAY', 'RECORD', 'STOP'], ['DIFFERENT', 'NEW', 'NOVEL', 'ORIGINAL'], ['CORRESPOND', 'MESSAGE', 'TEXT', 'WRITE'], ['BIPED', 'FURNITURE', 'POEM', 'YARDSTICK']]
+
+import os
+from groq import Groq
+from dotenv import load_dotenv
+import ast
 import numpy as np
-from word_embeddings import *
+from itertools import chain
 
-class DeepClusteringModel(nn.Module):
-    def __init__(self, input_dim, num_clusters,):
-        super(DeepClusteringModel, self).__init__()
-        self.fc1 = nn.Linear(input_dim, 2048)
-        self.fc2 = nn.Linear(2048, 1024)
-        self.fc2 = nn.Linear(1024, 512)
-        self.fc3 = nn.Linear(512,512)
-        self.fc4 = nn.Linear(512, num_clusters)
+def create_env_file(api_key):
+    with open('.env', 'w') as f:
+        f.write(f'GROQ_API_KEY="{api_key}"')
+
+load_dotenv()
+
+def initialize_groq():
+    api_key = os.getenv('GROQ_API_KEY')
+    if not api_key:
+        api_key = input("Please enter your Groq API key: ")
+        create_env_file(api_key)
+        load_dotenv()
+    return Groq(api_key=api_key)
+
+def cosine_similarity(v1, v2):
+    return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+
+def find_weakest_word(words, word_vectors):
+    avg_similarities = []
+    for i, word_vector in enumerate(word_vectors):
+        similarities = []
+        for j, other_vector in enumerate(word_vectors):
+            if i != j:
+                similarity = cosine_similarity(word_vectors[i], word_vectors[j])
+                similarities.append(similarity)
+        avg_similarity = np.mean(similarities)
+        avg_similarities.append((words[i], avg_similarity))
     
-    def forward(self, x):
-        x = torch.relu(self.fc1(x))
-        x = torch.relu(self.fc2(x))
-        x = torch.relu(self.fc3(x))
-        cluster_probs = torch.softmax(self.fc4(x), dim=-1)  # Softmax to get cluster probabilities
-        return cluster_probs
+    avg_similarities.sort(key=lambda x: x[1])
+    return avg_similarities[0][0]
 
-model = DeepClusteringModel(input_dim=4800, num_clusters=4)
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+def replace_weakest_with_best(word_list, current_guess, word_vectors):
+    remaining_words = [word for word in word_list if word not in current_guess]
+    best_word = None
+    highest_similarity = -1
 
-# Soft Clustering Loss Function (using negative log-likelihood)
-def soft_clustering_loss(cluster_probs, target_clusters):
-    dist = torch.sum(target_clusters * torch.log(cluster_probs + 1e-8), dim=1)
-    loss = -torch.mean(dist)  # Negative log-likelihood ==> log function < 0 when x between 0 and 1
-    return loss
+    for word in remaining_words:
+        word_vector = word_vectors[word]
+        avg_similarity = 0
+        for guess_word in current_guess:
+            avg_similarity += cosine_similarity(word_vectors[guess_word], word_vector)
+        avg_similarity /= len(current_guess)
 
-# Target clusters (one-hot encoded for simplicity)
-target_clusters = torch.eye(4)[torch.randint(0, 4, (len(words),))]  # Random one-hot labels for example
-
-# Training loop
-num_epochs = 100
-for epoch in range(num_epochs):
-    model.train()
+        if avg_similarity > highest_similarity:
+            highest_similarity = avg_similarity
+            best_word = word
     
-    # Fetch the word vectors for the given 16 words
-    word_vectors = get_word_vectors(words, model)
-
-    # Convert word vectors into a numpy array
-    word_vector_array = np.array([word_vectors[word] for word in words])
-    # Forward pass
-    cluster_probs = model(word_vectors)
+    weakest_word = find_weakest_word(current_guess, [word_vectors[word] for word in current_guess])
+    current_guess[current_guess.index(weakest_word)] = best_word
+    print(f"Replaced '{weakest_word}' with '{best_word}'")
     
-    # Compute the loss
-    loss = soft_clustering_loss(cluster_probs, target_clusters)
+    return current_guess
+
+def process_words():
+    client = initialize_groq()
+    strikes = 0
+    correctGroups = []
+    previousGuesses = []
+    failed_one_away_attempts = set()  # Track failed "one away" attempts
+
+    word_vectors_input = input("Enter word vectors as a 2D list string: ")
+    word_vectors_2d = ast.literal_eval(word_vectors_input)
+    wordList = list(chain.from_iterable(word_vectors_2d))
     
-    # Backward pass
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+    # Create word vectors (replace with real vectors in production)
+    word_vectors = {word: np.random.rand(10) for word in wordList}
     
-    # Print loss every 10 epochs
-    if (epoch + 1) % 10 == 0:
-        print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}")
+    all_categorizations = [f"Original words: {wordList}\n"]
+    remaining_attempts = 15  # Limit total attempts to prevent infinite loops
+    
+    while strikes < 4 and remaining_attempts > 0 and len(correctGroups) < 4:
+        remaining_attempts -= 1
+        
+        prompt = f"""
+        Take the words: {wordList}
+        Previous Guesses that were WRONG: {previousGuesses}
+        Correct Groups so far: {correctGroups}
+        
+        Find an extremely related grouping within the words given of size 4 that:
+        1. DOES NOT MATCH ANY of the PREVIOUS guesses
+        2. Only uses words that haven't been correctly grouped yet
+        3. Forms a clear category or theme. Find themes that fit every word completely, and try to find both completely partioned themes and overlapping themes.
+        
+        Categories could be things like common organization, trait, meaning, application, subject, use case, emotion, etc. Don't only use the one's I used, I would also try to find other complex groups. 
+        
+        The output should look like this: ["word1", "word2", "word3", "word4"]
+        """
+        
+        try:
+            chat_completion = client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}],
+                model="llama3-70b-8192",
+                temperature=1,
+                max_tokens=1024
+            )
+            
+            response = chat_completion.choices[0].message.content
+            response = response[response.index("["): response.index("]")+1]
+            print(f"Response from model: {response}")
+            
+            try:
+                guessed_group = ast.literal_eval(response)
+                print(f"Checking guessed group: {guessed_group}")
+                
+                # Skip if this exact group has been guessed before
+                if any(set(guessed_group) == set(prev_guess) for prev_guess in previousGuesses):
+                    print(f"Skipping repeated guess: {guessed_group}")
+                    continue
+                
+                # Validate that the guess only contains available words
+                if not all(word in wordList for word in guessed_group):
+                    print("Invalid guess: contains words not in the available list")
+                    continue
+                
+                # Check if the guess is correct
+                is_correct = input(f"Is this guess correct? (True/False): ").strip().lower()
+                
+                if is_correct == 'true':
+                    correctGroups.append(guessed_group)
+                    previousGuesses.append(guessed_group)
+                    # Remove correct words from wordList
+                    wordList = [word for word in wordList if word not in guessed_group]
+                    print(f"Correct group found! Remaining words: {wordList}")
+                    # Reset failed attempts tracking after a correct guess
+                    failed_one_away_attempts.clear()
+                else:
+                    isOneAway = input("Is one away? (True/False): ").strip().lower() == 'true'
+                    
+                    if isOneAway:
+                        # Increment strikes for "one away"
+                        strikes += 1
+                        print(f"Strike added for 'one away' guess. Total Strikes: {strikes}")
+                        
+                        # Create a frozen set of the current guess for tracking
+                        current_attempt = frozenset(guessed_group)
+                        
+                        if current_attempt in failed_one_away_attempts:
+                            print("This combination has already failed in a one-away attempt")
+                            continue
+                            
+                        new_guess = replace_weakest_with_best(wordList, guessed_group.copy(), word_vectors)
+                        failed_one_away_attempts.add(current_attempt)
+                        previousGuesses.append(new_guess)
+                        print(f"Corrected guess: {new_guess}")
+                    else:
+                        previousGuesses.append(guessed_group)
+                        strikes += 1  # Increment strikes when the guess is incorrect
+                        print(f"Wrong guess. Strikes: {strikes}")
+                
+                all_categorizations.append(f"Attempt {len(previousGuesses)}: {guessed_group}")
+                
+            except Exception as e:
+                print(f"Error parsing response: {e}")
+                strikes += 1
+                
+        except Exception as e:
+            print(f"API Error occurred: {str(e)}")
+            break
+    
+    # Game end conditions
+    if strikes >= 4:
+        print("Game Over: 4 strikes reached")
+    elif len(correctGroups) == 4:
+        print("Congratulations! All groups found!")
+    elif remaining_attempts <= 0:
+        print("Game Over: Maximum attempts reached")
+    
+    print("\n=== COMPLETE CATEGORIZATION HISTORY ===")
+    for categorization in all_categorizations:
+        print(categorization)
+    
+    return all_categorizations
 
-# After training, we get soft cluster assignments (probabilities)
-model.eval()
-with torch.no_grad():
-    cluster_probs = model(word_vectors)
-
-# Convert soft cluster probabilities to hard assignments by selecting the highest probability cluster
-hard_assignments = torch.argmax(cluster_probs, dim=-1)
-
-# Ensure each group has exactly 4 words
-groups = {i: [] for i in range(4)}
-
-# Assign words to groups based on hard assignments
-for i, word in enumerate(words):
-    assigned_cluster = hard_assignments[i].item()
-    groups[assigned_cluster].append(word)
-
-# If any group has more than 4 words, move words to balance the groups
-while any(len(group) > 4 for group in groups.values()):
-    for cluster_id, group in list(groups.items()):
-        if len(group) > 4:
-            # Find a word to move (take one word with the least similarity to the group)
-            word_to_move = group.pop()  # Simplified; choose the word to move based on your logic
-            # Find the most appropriate group for the word to move to
-            distances = []
-            for target_cluster_id, target_group in groups.items():
-                if len(target_group) < 4:
-                    # Compute similarity based on soft cluster probabilities (or use other criteria)
-                    similarity = cluster_probs[words.index(word_to_move), target_cluster_id].item()
-                    distances.append((similarity, target_cluster_id))
-            # Move word to the group with the most similarity
-            distances.sort(reverse=True)
-            best_cluster = distances[0][1]
-            groups[best_cluster].append(word_to_move)
-
-# Display final groups (with exactly 4 words in each group)
-for cluster_id, group in groups.items():
-    print(f"Group {cluster_id+1}: {group}")
+if __name__ == "__main__":
+    all_results = process_words()

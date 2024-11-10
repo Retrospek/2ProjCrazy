@@ -10,7 +10,7 @@ words = ["EXPONENT","POWER","RADICAL", "ROOT", "BENT", "GNARLY", "TWISTED", "WAR
 model = api.load("glove-wiki-gigaword-300")
 
 # Function to get word vectors for the given words
-def get_word_vectors(words, model):
+def get_word_vectors(words, model=model):
     word_vectors = {}
     for word in words:
         try:
