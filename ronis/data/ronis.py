@@ -147,3 +147,4 @@ def prices(df):
                 pass
     return pd.DataFrame(rows) 
 print(howmanyTypes(additup(), "Mac and Cheese Options"))
+
