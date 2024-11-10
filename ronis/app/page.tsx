@@ -134,6 +134,8 @@ export default function Home() {
   const [message, setMessage] = useState([]);
   const [message2, setMessage2] = useState([]);
 
+  const [pieTopping, setPieTopping] = useState([]);
+
   const [tab, setTab] = useState("Toppings");
   const onTabChange = (value: String) => {
     setTab(value);
@@ -161,6 +163,16 @@ export default function Home() {
     )
   }, [])
 
+  useEffect(() => {
+    fetch("http://localhost:8080/api/toppings_chart").then(
+      response => response.json()
+    ).then(
+      data => {
+        setPieTopping(data);
+      }
+    )
+  }, [])
+
   var selected = ['Test2', 'Test3'];
   var filtered = message2.filter(({
     Key
@@ -178,6 +190,13 @@ export default function Home() {
                       { "key": "Total", "var": message2 },
                       { "key": "Average", "var": filtered }
                     ];
+
+var pieKeys = {"Noodles" : message2,
+  "Cheese": filtered,
+  "Meat": filtered ,
+  "Toppings": pieTopping ,
+  "Drizzles": filtered ,
+  "Sides": filtered };
 
 
   return (
@@ -222,7 +241,7 @@ export default function Home() {
                     content={<ChartTooltipContent hideLabel />}
                   />
                   <Pie
-                    data={message2}
+                    data={pieKeys[tab]}
                     dataKey="Val"
                     nameKey="Key"
                     innerRadius={60}

@@ -55,7 +55,7 @@ price = {
     "Powerade (Blue Mountain Berry Blast)": 1.99,
     "Minute Maid Lemonade": 1.99
 }
-folder_path = 'ronis\data\datamonth'
+folder_path = 'ronis\server\data\datamonth'
 months = ["january", "february", 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
 files = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, file))]
 new_files = []
@@ -215,13 +215,6 @@ def restockRecommended(df):
     dict = {"Toppings":[], "Drink":[], "Drizzles":[], "Meats":[], "Cheese":[], "Side":[]}
     for i in dict:
         dict[i] = list(howmanyTypes(df, i).to_dict().keys())[0:5]
-    return dict
-print(sales('daily').to_dict())
-f = open('daily_sales.csv', 'w')
-dic = sales('daily').to_dict()
-for i in (dic):
-    f.write(f"{str(i[0])},{str(i[1])},{str(dic[i])}\n")
-f.close()
-
-
+d = howmanyTypes(additup(),'Toppings').to_dict()
+print([{"Key":i, "Value":d[i]} for i in d])
 
