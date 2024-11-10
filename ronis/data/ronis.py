@@ -176,6 +176,52 @@ def most(df):
     for i in dict:
         dict[i] = list(howmanyTypes(df, i).to_dict().keys())[0]
     return dict
-print(most(additup()))
+def sales(type):
+    df = prices(additup())
+    if(type == "total"):
+        return (df['Price'].sum())
+    elif(type == "monthly"):
+        df['Month'] = df['Sent Date'].dt.month
+        return df.groupby('Month')['Price'].sum()
+    elif type == "biweekly":
+        df['Month'] = df['Sent Date'].dt.month
+        df.loc[df['Sent Date'].dt.day <= 15, 'Biweekly'] = 15
+        df.loc[df['Sent Date'].dt.day > 15, 'Biweekly'] = 31
+        return df.groupby(['Month', 'Biweekly'])['Price'].sum().sort_index(ascending=True)
+    elif(type == "daily"):
+        df['Month'] = df['Sent Date'].dt.month
+        df['Day'] = df['Sent Date'].dt.day
+       
+        return df.groupby(['Month', 'Day'])['Price'].sum().sort_index(ascending=True)
+    
+def average_price(type):
+    df = prices(additup())
+    if(type == "total"):
+        return (df['Price'].sum())
+    elif(type == "monthly"):
+        df['Month'] = df['Sent Date'].dt.month
+        return round(df.groupby('Month')['Month','Price'].sum()/len(files), 2)
+    elif type == "biweekly":
+        df['Month'] = df['Sent Date'].dt.month
+        df.loc[df['Sent Date'].dt.day <= 15, 'Biweekly'] = 15
+        df.loc[df['Sent Date'].dt.day > 15, 'Biweekly'] = 31
+        return round(df.groupby(['Month', 'Biweekly'])['Price'].mean().sort_index(ascending=True),2)
+    elif(type == "daily"):
+        df['Month'] = df['Sent Date'].dt.month
+        df['Day'] = df['Sent Date'].dt.day
+       
+        return round(df.groupby(['Month', 'Day'])['Price'].mean().sort_index(ascending=True),2)
+def restockRecommended(df):
+    dict = {"Toppings":[], "Drink":[], "Drizzles":[], "Meats":[], "Cheese":[], "Side":[]}
+    for i in dict:
+        dict[i] = list(howmanyTypes(df, i).to_dict().keys())[0:5]
+    return dict
+print(sales('daily').to_dict())
+f = open('daily_sales.csv', 'w')
+dic = sales('daily').to_dict()
+for i in (dic):
+    f.write(f"{str(i[0])},{str(i[1])},{str(dic[i])}\n")
+f.close()
 
-prices(additup()).to_csv('ronis\data\prices.csv', index = False)
+
+
