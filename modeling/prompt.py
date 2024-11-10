@@ -1,10 +1,6 @@
-#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
-#SNOW LEVEL SHIFT KAYAK HEAT TAB BUCKS RETURN JAZZ HAIL OPTION RAIN SLEET RACECAR MOM NETS
-#[['SNOW', 'LEVEL', 'SHIFT', 'KAYAK'], ['HEAT', 'TAB', 'BUCKS', 'RETURN'], ['JAZZ', 'HAIL', 'OPTION', 'RAIN'], ['SLEET', 'RACECAR', 'MOM', 'NETS']]
-#[['ANTIC', 'CAPER', 'EXPLOIT', 'STUNT'], ['DILL', 'KOSHER', 'SOUR', 'SWEET'], ['ADULT', 'BLUE', 'SPICY', 'SUGGESTIVE'], ['CHEESE', 'CORD', 'DECK', 'MUSTARD']]
-#[['HASH', 'SALAD', 'SCRAMBLE', 'STEW'], ['CHARACTER', 'IMAGE', 'NAME', 'REPUTATION'], ['ARTIST', 'MEDIUM', 'TITLE', 'YEAR'], ['DIAL', 'EGADS', 'MONTE', 'YOGA']]
-#[['PAUSE', 'PLAY', 'RECORD', 'STOP'], ['DIFFERENT', 'NEW', 'NOVEL', 'ORIGINAL'], ['CORRESPOND', 'MESSAGE', 'TEXT', 'WRITE'], ['BIPED', 'FURNITURE', 'POEM', 'YARDSTICK']]
-
+#[['PRINCESS', 'CARPET', 'TURTLE', 'PIPE CLEANER'], ['DRAGON', 'PEACH', 'KINGDOM', 'NUT'], ['MARKER', 'CATERPILLAR', 'EGG', 'DONKEY'], ['MUSHROOM', 'FLEECE', 'CLAM', 'OGRE']]
+#[["MOVING", "SWEET", "TENDER", "TOUCHING"], ["FEELING", "HUNCH", "IMPRESSION", "SENSE"], ["HEARING", "INQUIRY", "PROCEEDING", "TRIAL"], ["CHAIR", "LISTENING", "MONEY", "STREET"]]
+#[["BOARD", "CABINET", "COUNCIL", "PANEL"], ["COUNTER", "FRIDGE", "RANGE", "SINK"], ["CHANDELIER", "DROP", "HOOP", "STUD"], ["BOAT", "CRUNCH", "MOUNTAIN CLIMBER", "PLANK"]]
 import os
 from groq import Groq
 from dotenv import load_dotenv
@@ -71,7 +67,7 @@ def process_words():
     correctGroups = []
     previousGuesses = []
     failed_one_away_attempts = set()  # Track failed "one away" attempts
-
+    
     word_vectors_input = input("Enter word vectors as a 2D list string: ")
     word_vectors_2d = ast.literal_eval(word_vectors_input)
     wordList = list(chain.from_iterable(word_vectors_2d))
