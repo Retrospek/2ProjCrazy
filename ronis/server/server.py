@@ -266,7 +266,36 @@ def noodles_chart():
     return jsonify([
         {"Key":i, "Value":d[i]} for i in d
     ])
-
+    
+@app.route("/api/catering_chart", methods=["GET"])
+def catering_chart():
+    d = howmanyTypes(additup(),'Mac and Cheese Options').to_dict()
+    return jsonify([
+        {"Key":i, "Value":d[i]} for i in d
+    ])
+    
+@app.route("/api/salesPerMonth_chart", methods=["GET"])
+def salesPerMonth_chart():
+    d = sales('daily').to_dict()
+    return jsonify([
+        {"Key":i, "Value":d[i]} for i in d
+    ])
+@app.route("/api/meatIncome_chart", methods=["GET"])
+def meatIncome_chart():
+    d = income(howmanyTypes(additup(),'Meats')).to_dict()
+    return jsonify([
+        {"Key":i, "Value":d[i]} for i in d
+    ])
+@app.route("/api/sideIncome_chart", methods=["GET"])
+def sideIncome_chart():
+    d = income(howmanyTypes(additup(),'Side')).to_dict()
+    return jsonify([
+        {"Key":i, "Value":d[i]} for i in d
+    ])
+@app.route("/api/averageBowl_chart", methods=["GET"])
+def averageBowl_chart():
+    return average_price('total').to_dict()
+    
 @app.route("/api/test", methods=["GET"])
 def return_test():
     return jsonify([
